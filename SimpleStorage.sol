@@ -27,7 +27,7 @@ contract SimpleStorage {
 //all the types has a default value for eg uint 256 has default value of 0, boolean is false...
 }
 
-// -------------------- FUNCTIONS --------------------------
+// ------------------------------------- FUNCTIONS --------------------------
 // Solidity Function Visibility Specifiers
 // default is internal is no keyword is given
 // 1. **Public**: 
@@ -88,10 +88,11 @@ contract SimpleStorage {
 contract MyFirstContract {
     uint256 number = 13;
 
+//uint256 newNumer: This is a parameter of type uint256 that the function accepts when called. It represents the numer that the user wants to store.
     function double(uint256 newNumer) public {
         // newNumer*number = number; //wrong way to declare!!
         number = newNumer * number;  // Multiply and assign the result to 'number'
-    }
+    } 
 
     function reveal() public view returns(uint256){
         return number;
@@ -128,4 +129,55 @@ contract SimpleStorage {
     listOfPeople.push(Person( _favoriteNumber, _name));
     // 'Person(_favoriteNumber, _name)' creates a new 'Person' struct and adds it to the array.
  }
+}
+
+// ------------------------------------- MAPPING --------------------------
+//Syntax 
+//mapping(keyType => valueType) visibility mappingName;
+//keyType: The data type of the key. Keys can be any value type (e.g., uint, address, string).
+//valueType: The data type of the value associated with each key. Values can be any type, including structs and arrays.
+
+
+//easy example
+contract SimpleStorage {
+
+  struct Person{
+    uint256 favoriteNumber;
+    string name;
+  }
+  
+  Person[] public listOfPeople;
+
+  // Declare a mapping that links a name (string) to a favorite number (uint256)
+  //syntax mapping(key -> type) visibility 
+  mapping(string => uint256) public giveNameGetFavoriteNumber;
+
+  //function to add a new person to the list and update the mapping
+ function addPerson(string memory _name, uint256 _favoriteNumber) public {
+  // Add a new Person struct to the array with the provided name and favorite number
+    listOfPeople.push(Person( _favoriteNumber, _name));
+ // Update the mapping with the person's name as the key and their favorite number as the value
+    giveNameGetFavoriteNumber[_name] = _favoriteNumber;
+ }
+}
+
+
+// Define a contract called SimpleBank
+contract SimpleBank {
+    
+    // Define a mapping to link each address (user) to a balance (uint256)
+    // `public` visibility lets anyone check any address's balance
+    mapping(address => uint256) public balances;
+
+    // A function to allow users to deposit Ether into their own balance
+    function deposit() public payable {
+        // `msg.sender` refers to the address of the person calling this function
+        // `msg.value` is the amount of Ether sent with the transaction
+        balances[msg.sender] += msg.value; // Add the Ether sent to the caller's balance
+    }
+
+    // A function that lets users check their balance
+    function getBalance() public view returns (uint256) {
+        return balances[msg.sender]; // Return the balance associated with the caller's address
+    }
 }
