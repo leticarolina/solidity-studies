@@ -181,3 +181,28 @@ contract SimpleBank {
         return balances[msg.sender]; // Return the balance associated with the caller's address
     }
 }
+
+
+// ------------------------------------ IMPORT --------------------------
+//SYNTAX import {ContractOrLibrary} from "filepath";
+
+
+
+//importing a contract to another, this can make one contract run/deploy another
+import {SimpleStorage2} from "SimpleStorage.sol"; //The curly braces allow to specify a specific contract or library from the file.
+//can also without braces, like import "SimpleStorage.sol" if you want access to all its contents.
+
+contract StorageFactory {
+
+ SimpleStorage2 public simpleStorage; // first w capital letter is reffering to the contract itself and the second reffers to the 'variable name'
+ //SimpleStorage2 refers to the contract type (from SimpleStorage.sol), while simpleStorage is the variable name.
+
+//fter calling createSimpleStorageContract(), you have a freshly deployed SimpleStorage2 contract that you can use and interact with via simpleStorage.
+function createSimpleStorageContract() public {
+    simpleStorage = new SimpleStorage2(); //the keyword new is how solidity knows to deploy a contract
+    //new SimpleStorage2(): The keyword new is used to deploy or create a new instance *Copy of a contract in Solidity. 
+    //When the new SimpleStorage2 instance is created, it’s assigned to simpleStorage, which is a state variable in StorageFactory.
+    //This means that from within StorageFactory, you can interact with this deployed instance through the simpleStorage variable.
+    }
+    
+}
