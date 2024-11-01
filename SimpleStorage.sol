@@ -27,6 +27,9 @@ contract SimpleStorage {
 //all the types has a default value for eg uint 256 has default value of 0, boolean is false...
 }
 
+//While variables should generally be lowercase or in camelCase
+//contract names and struct names usually start with uppercase letters (PascalCase).
+
 // ------------------------------------- FUNCTIONS --------------------------
 // Solidity Function Visibility Specifiers
 // default is internal is no keyword is given
@@ -194,15 +197,59 @@ import {SimpleStorage2} from "SimpleStorage.sol"; //The curly braces allow to sp
 
 contract StorageFactory {
 
+//type visibility variable
  SimpleStorage2 public simpleStorage; // first w capital letter is reffering to the contract itself and the second reffers to the 'variable name'
  //SimpleStorage2 refers to the contract type (from SimpleStorage.sol), while simpleStorage is the variable name.
 
-//fter calling createSimpleStorageContract(), you have a freshly deployed SimpleStorage2 contract that you can use and interact with via simpleStorage.
+//after calling createSimpleStorageContract(), you have a freshly deployed SimpleStorage2 contract that you can use and interact with via simpleStorage.
 function createSimpleStorageContract() public {
     simpleStorage = new SimpleStorage2(); //the keyword new is how solidity knows to deploy a contract
-    //new SimpleStorage2(): The keyword new is used to deploy or create a new instance *Copy of a contract in Solidity. 
+    //new SimpleStorage2(): The keyword new is used to create a brand new instance *Copy and deploy a contract in Solidity. 
     //When the new SimpleStorage2 instance is created, it’s assigned to simpleStorage, which is a state variable in StorageFactory.
     //This means that from within StorageFactory, you can interact with this deployed instance through the simpleStorage variable.
     }
+   // ps: It does not pull or interact with a pre-existing deployed SimpleStorage2 contract.
+  //It creates and deploys a new instance of SimpleStorage2 on the blockchain each time new SimpleStorage2() is called.
     
+}
+
+//code without comments
+import {nameOfContract} from "FileContractIsStored.sol";
+
+contract FreshCopy {
+
+    nameOfContract public c
+}
+
+
+// --------------------------------- INTERACTING WITH CONTRACTS ABI ----------------------------------
+
+//interacting with the new instance of imported contract
+
+import {SimpleStorageOriginal} from "SimpleStorage.sol";
+
+
+contract Factory {
+//SimpleStorageOriginal[]: Declares a dynamic array to store multiple instances of the SimpleStorageOriginal contract. 
+//but it does NOT declare the type so that's why SimpleStorageOriginal will be repeated in the fucntion (to declare a type)
+ SimpleStorageOriginal[] public listOfGeneratedContracts; 
+
+//When you’re creating a new variable for the first time, you always have to specify the type so that the compiler knows what kind of data it will hold. 
+//This is why you write SimpleStorageOriginal generatedContractVariable.
+ function createSimpleStorageContract() public {
+ //SimpleStorageOriginal is a contract type in this context, just like uint256 is a type for numbers. 
+    SimpleStorageOriginal generatedContractVariable = new SimpleStorageOriginal(); 
+    listOfGeneratedContracts.push(generatedContractVariable);
+    }
+
+//_indexOfGenerateContract: Specifies which instance of SimpleStorageOriginal you want to interact with (using the array index)
+//_favoriteNumber: The number you want to store in that specific instance.
+ function callingStoreFromSimpleStorageOriginal (uint256 _indexOfGenerateContract, uint256 _favoriteNumber) public {
+  //address //ABI ??
+ listOfGeneratedContracts[_indexOfGenerateContract].store(_favoriteNumber); //store is the name of function SimpleStorageOriginal has
+  }
+
+  function callingRetrieveFromSimpleStorageOriginal(uint256 _indexOfGenerateContract) public view returns (uint256) {
+  return listOfGeneratedContracts[_indexOfGenerateContract].retrieve();
+  }
 }
