@@ -213,14 +213,6 @@ function createSimpleStorageContract() public {
     
 }
 
-//code without comments
-import {nameOfContract} from "FileContractIsStored.sol";
-
-contract FreshCopy {
-
-    nameOfContract public c
-}
-
 
 // --------------------------------- INTERACTING WITH CONTRACTS ABI ----------------------------------
 
@@ -230,8 +222,9 @@ import {SimpleStorageOriginal} from "SimpleStorage.sol";
 
 
 contract Factory {
-//SimpleStorageOriginal[]: Declares a dynamic array to store multiple instances of the SimpleStorageOriginal contract. 
+//SimpleStorageOriginal[]: Declares a dynamic array to store multiple instances of the  type SimpleStorageOriginal.
 //but it does NOT declare the type so that's why SimpleStorageOriginal will be repeated in the fucntion (to declare a type)
+//Here, SimpleStorageOriginal specifies the type of each element in the array listOfGeneratedContracts
  SimpleStorageOriginal[] public listOfGeneratedContracts; 
 
 //When you’re creating a new variable for the first time, you always have to specify the type so that the compiler knows what kind of data it will hold. 
@@ -250,6 +243,32 @@ contract Factory {
   }
 
   function callingRetrieveFromSimpleStorageOriginal(uint256 _indexOfGenerateContract) public view returns (uint256) {
-  return listOfGeneratedContracts[_indexOfGenerateContract].retrieve();
+  return listOfGeneratedContracts[_indexOfGenerateContract].retrieve(); //this is a more consed code without declaring a type and variable
+//   SimpleStorageOriginal mySimpleStorage = listOfGeneratedContracts[_indexOfGenerateContract];
+//   return mySimpleStorage.retrieve();
   }
 }
+
+// --------------------------------- OVERRIDING A FUNCTION ----------------------------------
+
+//importing the contract I want to override the function from
+import {SimpleStorageOriginal} from "./SimpleStorage.sol";
+
+//this declaration 'is' takes all the data from SimpleStorageOriginal and put into my new contract without having to code it.
+//This line means that AddFiveToFavoriteNumber inherits all the functions and variables from SimpleStorageOriginal
+contract AddFiveToFavoriteNumber is SimpleStorageOriginal {
+
+//since we are overriding a function from SimpleStorageOriginal the function name HAS to be the same 
+//the keyword override has to be in the function 
+//about _favoriteNumber The parameter type must remain the same (e.g. uint256), but the parameter name can be different. However, for clarity and consistency, developers often keep the parameter names the same.
+//_favoriteNumber is just the name used within the AddFiveToFavoriteNumber contract.
+    function store (uint256 _favoriteNumber) public override{
+        myFavoriteNumber = _favoriteNumber + 5;
+
+    }
+
+//PS: the function you want to make overridable needs the 'virtual' keyword. This specifies that the function is open to being overridden by derived contracts.
+//example in SimpleStorageOriginal
+ function store(uint256 _favoriteNumber) public virtual {
+        myFavoriteNumber = _favoriteNumber;
+    }
