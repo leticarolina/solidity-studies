@@ -14,7 +14,9 @@ contract FundMe {
 
 uint256 minimumValueUsd = 5e18;
 address[] public listOfAddressSentMoney;
-mapping(address addressOfSender => uint256 amountSent) public addressToAmountSent;
+//Mappings Are Like Hash Tables key to value
+mapping(address addressOfSender => uint256 amountSent) public addressToAmountSent; //This line means that for each address key, there’s an associated uint256 value.
+uint256 funderIndex;
 
 //payable: This keyword allows the function to receive Ether. Functions that are expected to receive Ether must be marked payable.
 //require is a way to enforce rules and conditions in your smart contract. If the condition is not satisfied, the function execution is halted, and any state changes are reverted.
@@ -25,8 +27,16 @@ function getFunds() public payable {
    addressToAmountSent[msg.sender] = addressToAmountSent[msg.sender] + msg.value;
 
  }
-    function withdraw() public {
 
+function withdraw() public {
+
+// this for loop is looping thru each index of listOfAddressSentMoney,using the mapping addressToAmountSent to get the amount sent by each address and reset it to zero.
+//in a mapping, you can access a value by providing the key in square brackets. For example, addressToAmountSent[0xabc...] would return 2 ether
+//setting addressToAmountSent[0xabc...] = 0, it updates the value associated with that address key to 0.
+for (funderIndex = 0; funderIndex < listOfAddressSentMoney.length; funderIndex++) {
+    address funder = listOfAddressSentMoney[funderIndex];
+    addressToAmountSent[funder] = 0; //This sets the amount sent by each address to 0, "withdrawing" their funds.
+}
     }
 }
 
