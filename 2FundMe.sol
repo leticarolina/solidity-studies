@@ -37,6 +37,20 @@ for (funderIndex = 0; funderIndex < listOfAddressSentMoney.length; funderIndex++
     address funder = listOfAddressSentMoney[funderIndex];
     addressToAmountSent[funder] = 0; //This sets the amount sent by each address to 0, "withdrawing" their funds.
 }
+//tells Solidity to create a new dynamic array of type address[].
+//(0) specifies that the initial length of this new array should be zero, effectively creating an empty array.
+listOfAddressSentMoney = new address[] (0);
+
+//callSuccess: A boolean indicating whether the call was successful (true) or not (false).
+//The call function is being used here to transfer all the Ether in the contract to msg.sender.
+//value: address(this).balance specifies the amount of Ether to send (in this case, all Ether held by the contract).
+//The require statement checks the value of callSuccess. If callSuccess is false, the transaction reverts with the error message "Call failed".
+(bool callSuccess, bytes memory dataReturned) = payable(msg.sender).call{value: address(this).balance}("");
+require(callSuccess, "Call failed");
+    }
+
+    function calculateSum(uint256 number1, uint256 number2) public pure returns (uint256){
+    return MathLibrary.sum(number1, number2);
     }
 }
 
