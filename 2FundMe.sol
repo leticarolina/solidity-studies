@@ -42,10 +42,15 @@ for (funderIndex = 0; funderIndex < listOfAddressSentMoney.length; funderIndex++
 listOfAddressSentMoney = new address[] (0);
 
 //callSuccess: A boolean indicating whether the call was successful (true) or not (false).
-//The call function is being used here to transfer all the Ether in the contract to msg.sender.
-//value: address(this).balance specifies the amount of Ether to send (in this case, all Ether held by the contract).
-//The require statement checks the value of callSuccess. If callSuccess is false, the transaction reverts with the error message "Call failed".
-(bool callSuccess, bytes memory dataReturned) = payable(msg.sender).call{value: address(this).balance}("");
+////The require statement below checks the value of callSuccess. If callSuccess is false, the transaction reverts with the error message "Call failed".
+// msg.sender refers to the address of the account or contract that triggered the current function execution.
+//.call is a low-level function in Solidity used to send Ether to another address
+//value: specifies how much Ether to send. In Solidity, value is a keyword used to set the amount of Ether (in wei) that should be sent along with the call.
+//address(this).balance refers to the total balance of Ether held by the contract (this refers to the current contract). 
+//By using address(this).balance, we’re telling the contract to send all of its current Ether balance to msg.sender
+//("") represents an empty call payload.
+//In Solidity, call can take data that the receiving contract could use to execute a specific function or logic. By passing an empty string (""), we're simply sending Ether without any additional data or instructions.
+(bool callSuccess, ) = payable(msg.sender).call{value: address(this).balance}("");
 require(callSuccess, "Call failed");
     }
 
