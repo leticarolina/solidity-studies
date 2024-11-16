@@ -16,7 +16,7 @@ uint256 minimumValueUsd = 5e18;
 address[] public listOfAddressSentMoney;
 //Mappings Are Like Hash Tables key to value
 mapping(address addressOfSender => uint256 amountSent) public addressToAmountSent; //This line means that for each address key, there’s an associated uint256 value.
-uint256 funderIndex;
+uint256 funderIndex; //the loop counter and the index variable in the for loop. 
 
 //payable: This keyword allows the function to receive Ether. Functions that are expected to receive Ether must be marked payable.
 //require is a way to enforce rules and conditions in your smart contract. If the condition is not satisfied, the function execution is halted, and any state changes are reverted.
@@ -70,6 +70,9 @@ library Converter {
   return ethAmountInUsd; // Step 3: Return the calculated amount in USD
 
  }
+ bool succesSend = payable(msg.sender).send(addres(.this.balance));
+ require(succes, "call failed");
+ 
 }
 
 
