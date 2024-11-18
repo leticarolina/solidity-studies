@@ -17,6 +17,15 @@ address[] public listOfAddressSentMoney;
 //Mappings Are Like Hash Tables key to value
 mapping(address addressOfSender => uint256 amountSent) public addressToAmountSent; //This line means that for each address key, there’s an associated uint256 value.
 uint256 funderIndex; //the loop counter and the index variable in the for loop. 
+address public owner;
+
+//The constructor is executed only once, when the contract is deployed. After deployment, it cannot be called again.
+//The purpose of the constructor is often to initialize important variables or set initial values for the contract.
+//msg.sender in the context of the constructor refers to the address that deployed the contract
+//This code is commonly used to establish ownership of the contract. 
+constructor(){
+    owner = msg.sender;
+}
 
 //payable: This keyword allows the function to receive Ether. Functions that are expected to receive Ether must be marked payable.
 //require is a way to enforce rules and conditions in your smart contract. If the condition is not satisfied, the function execution is halted, and any state changes are reverted.
@@ -29,6 +38,9 @@ function getFunds() public payable {
  }
 
 function withdraw() public {
+//msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
+//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
+require(msg.sender == owner, "Message.sender must be equal owner");
 
 // this for loop is looping thru each index of listOfAddressSentMoney,using the mapping addressToAmountSent to get the amount sent by each address and reset it to zero.
 //in a mapping, you can access a value by providing the key in square brackets. For example, addressToAmountSent[0xabc...] would return 2 ether
