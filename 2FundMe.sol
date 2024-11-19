@@ -1,3 +1,11 @@
+//common structure for organizing Solidity contracts:
+
+//Pragma Statements - Version declarations and imports.
+//State Variables - Define variables to store contract state.
+//Modifiers - Place modifiers after state variables to provide access control or reusable checks for the functions below.
+//Constructor - Initialization logic.
+//Functions - Functions using modifiers can then be defined, and having modifiers close to them makes the purpose of each function clear.
+
 // --------------------- FUND ME PROJECT -------------------------------------
 //SPDX-License-Identifier: MIT
 
@@ -19,11 +27,23 @@ mapping(address addressOfSender => uint256 amountSent) public addressToAmountSen
 uint256 funderIndex; //the loop counter and the index variable in the for loop. 
 address public owner;
 
+//Modifiers in Solidity are used to define reusable conditions or checks that can be applied to multiple functions to control access or enforce certain behaviors. 
+//The modifier is a common example, which restricts access to certain functions so only the owner can call them.
+modifier checkIfItsOwner() {
+    //msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
+//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
+require(msg.sender == owner, "Message.sender must be equal owner");
+    _; //Continues to function execution if the require passes
+}
+
+
 //The constructor is executed only once, when the contract is deployed. After deployment, it cannot be called again.
 //The purpose of the constructor is often to initialize important variables or set initial values for the contract.
 //msg.sender in the context of the constructor refers to the address that deployed the contract
 //This code is commonly used to establish ownership of the contract. 
 constructor(){
+    //msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
+//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
     owner = msg.sender;
 }
 
@@ -37,10 +57,9 @@ function getFunds() public payable {
 
  }
 
-function withdraw() public {
-//msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
-//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
-require(msg.sender == owner, "Message.sender must be equal owner");
+function withdraw() public checkIfItsOwner {
+//no need for this code below bcs the CheckIfItsOwner modifier is being embed in the function
+// require(msg.sender == owner, "Message.sender must be equal owner");
 
 // this for loop is looping thru each index of listOfAddressSentMoney,using the mapping addressToAmountSent to get the amount sent by each address and reset it to zero.
 //in a mapping, you can access a value by providing the key in square brackets. For example, addressToAmountSent[0xabc...] would return 2 ether
@@ -128,3 +147,15 @@ contract AddNumbers {
         MathLibrary.add(num1, num2);
     }
 }
+
+// ------------------------------- Constrcutor  -------------------------------------
+// the constructor in Solidity is always called once at the beginning when the contract is deployed.
+//Once the contract is on the blockchain, the constructor code is no longer accessible.
+// It’s where you typically define any initial setup, like initial balances, owner addresses, or other settings that should be established when the contract starts.
+contract MyContract {
+ address public owner;
+
+ constructor () {
+    owner = msg.sender; //// Sets the deployer as the contract owner
+    }
+ }
