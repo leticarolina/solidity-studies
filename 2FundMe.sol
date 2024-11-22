@@ -18,23 +18,19 @@ pragma solidity ^0.8.18;
 import {Converter} from "./Converter.sol"; //IMPORTING THE LIBRARY 
 using Converter for uint256; //essentially saying that any uint256 variable in our contract can use the functions defined in the Converter library 
 
+// you can define custom errors to provide meaningful descriptions for conditions that fail in your smart contract
+//error is the keyword used to define a custom error.
+//notOwner is the name of the error
+error notOwner();
+
 contract FundMe {
 
-uint256 minimumValueUsd = 5e18;
+uint256 public constant MINIMUM_VALUE_USD = 5e18; //Variables declared as constant are set at the time of compilation and cannot be change afterward.
 address[] public listOfAddressSentMoney;
 //Mappings Are Like Hash Tables key to value
 mapping(address addressOfSender => uint256 amountSent) public addressToAmountSent; //This line means that for each address key, there’s an associated uint256 value.
 uint256 funderIndex; //the loop counter and the index variable in the for loop. 
-address public owner;
-
-//Modifiers in Solidity are used to define reusable conditions or checks that can be applied to multiple functions to control access or enforce certain behaviors. 
-//The modifier is a common example, which restricts access to certain functions so only the owner can call them.
-modifier checkIfItsOwner() {
-    //msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
-//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
-require(msg.sender == owner, "Message.sender must be equal owner");
-    _; //Continues to function execution if the require passes
-}
+address public immutable i_owner; //Variables declared as immutable are set once, but only at deployment time, and cannot be changed afterward.
 
 
 //The constructor is executed only once, when the contract is deployed. After deployment, it cannot be called again.
@@ -44,14 +40,40 @@ require(msg.sender == owner, "Message.sender must be equal owner");
 constructor(){
     //msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
 //This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
-    owner = msg.sender;
+    i_owner = msg.sender;
 }
+
+//Modifiers in Solidity are used to define reusable conditions or checks that can be applied to multiple functions to control access or enforce certain behaviors. 
+//The modifier checkIfItsOwner is a common example, which restricts access to certain functions so only the owner can call them.
+//Revert: If the condition is true (the sender is not the owner), the transaction is reverted using the revert keyword, and the notOwner() error is triggered.
+modifier checkIfItsOwner() {
+      if(msg.sender != i_owner) {
+        revert notOwner();
+    }
+//msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
+//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
+// require(msg.sender == i_owner, "Message.sender must be equal owner");
+    _; //Continues to function execution if the require passes
+}
+
+
+//This function is designed to handle plain Ether transfers (without any data) to the contract.
+//Visibility: external means that it can only be called from outside the contract, which is standard for receive().
+    receive() external payable {
+        getFunds();
+    }
+//This function is used as a catch-all function that gets triggered when the contract:
+//Receives Ether along with data, or attempts to call a function that doesn’t exist in the contract.
+    fallback() external payable {
+        getFunds();
+    }
+
 
 //payable: This keyword allows the function to receive Ether. Functions that are expected to receive Ether must be marked payable.
 //require is a way to enforce rules and conditions in your smart contract. If the condition is not satisfied, the function execution is halted, and any state changes are reverted.
 //msg.value: This is a global variable that stores the amount of Ether (in wei) sent with the transaction. In this case is also the FIRST parameter for getConversionRate(second parameter here if necessary);
 function getFunds() public payable {
-   require(msg.value.getConversionRate() >= minimumValueUsd, "If the value is less than required then pop this message");
+   require(msg.value.getConversionRate() >= MINIMUM_VALUE_USD, "If the value is less than required then pop this message");
    listOfAddressSentMoney.push(msg.sender);
    addressToAmountSent[msg.sender] = addressToAmountSent[msg.sender] + msg.value;
 
@@ -96,7 +118,7 @@ require(callSuccess, "Call failed");
 
 pragma solidity ^0.8.18;
 
-// This interface allows your contract to interact with a Chainlink price feed
+// This interface allows contract to interact with a Chainlink price feed
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 library Converter {
@@ -120,8 +142,6 @@ library Converter {
   return ethAmountInUsd; // Step 3: Return the calculated amount in USD
 
  }
- bool succesSend = payable(msg.sender).send(addres(.this.balance));
- require(succes, "call failed");
  
 }
 
@@ -159,3 +179,26 @@ contract MyContract {
     owner = msg.sender; //// Sets the deployer as the contract owner
     }
  }
+
+
+// ------------------------------- FALLBACK & RECEIVE -------------------------------------
+//The fallback and receive functions in Solidity are special functions that handle how a contract interacts with incoming transactions that don't call a specific function. 
+
+//If neither receive nor fallback is implemented, any Ether sent to the contract will revert.
+//Both functions are optional but useful for creating flexible, error-resilient contracts.
+//Misuse of fallback (e.g., allowing arbitrary calls without checks) can lead to security vulnerabilities.
+contract FallBackExample {
+    uint256 public resultFromUnknownTransaction;
+
+    receive() external payable{
+        resultFromUnknownTransaction = 1;
+        //"money was sent to this contract without using 'GetFunds' function, so receive () will take care of it";
+    }
+
+    fallback() external payable {
+        resultFromUnknownTransaction = 2;
+        //"an unknown fucntion was called in CALLDATA so this is the fallback";
+    }
+
+
+}
