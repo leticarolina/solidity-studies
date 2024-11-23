@@ -9,7 +9,7 @@
 pragma solidity >=0.8.19; //stating our version
 
 contract SimpleStorage {
-    //basic types: boolean, uint,int, address, bytes
+    //basic types: boolean, uint, int, address, bytes
     
     //using boolean to create a variable and give it a value
     bool hasFavoriteNumber = true;
@@ -27,8 +27,9 @@ contract SimpleStorage {
 //all the types has a default value for eg uint 256 has default value of 0, boolean is false...
 }
 
-//While variables should generally be lowercase or in camelCase
+// variables should generally be lowercase or in camelCase
 //contract names and struct names usually start with uppercase letters (PascalCase).
+
 
 // ------------------------------------- FUNCTIONS --------------------------
 // Solidity Function Visibility Specifiers
