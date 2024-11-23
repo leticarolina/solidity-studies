@@ -19,8 +19,7 @@ import {Converter} from "./Converter.sol"; //IMPORTING THE LIBRARY
 using Converter for uint256; //essentially saying that any uint256 variable in our contract can use the functions defined in the Converter library 
 
 // you can define custom errors to provide meaningful descriptions for conditions that fail in your smart contract
-//error is the keyword used to define a custom error.
-//notOwner is the name of the error
+//error is the keyword used to define a custom error. //notOwner is the name of the error
 error notOwner();
 
 contract FundMe {
@@ -38,8 +37,6 @@ address public immutable i_owner; //Variables declared as immutable are set once
 //msg.sender in the context of the constructor refers to the address that deployed the contract
 //This code is commonly used to establish ownership of the contract. 
 constructor(){
-    //msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
-//This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
     i_owner = msg.sender;
 }
 
@@ -50,10 +47,11 @@ modifier checkIfItsOwner() {
       if(msg.sender != i_owner) {
         revert notOwner();
     }
+     _; //Continues to function execution if the require passes
+
 //msg.sender == owner: This condition checks if the address calling the function (msg.sender) is the same as the owner address stored in the contract.
 //This line is used for access control. By placing this require statement at the beginning of a function, you ensure that only the contract owner can call that function.
 // require(msg.sender == i_owner, "Message.sender must be equal owner");
-    _; //Continues to function execution if the require passes
 }
 
 
@@ -84,8 +82,8 @@ function withdraw() public checkIfItsOwner {
 // require(msg.sender == owner, "Message.sender must be equal owner");
 
 // this for loop is looping thru each index of listOfAddressSentMoney,using the mapping addressToAmountSent to get the amount sent by each address and reset it to zero.
-//in a mapping, you can access a value by providing the key in square brackets. For example, addressToAmountSent[0xabc...] would return 2 ether
-//setting addressToAmountSent[0xabc...] = 0, it updates the value associated with that address key to 0.
+//in a mapping, you can access a value by providing the key in square brackets. For example, addressToAmountSent[0xabcm...] would return 2 ether
+//setting addressToAmountSent[0xabcm...] = 0, it updates the value associated with that address key to 0.
 for (funderIndex = 0; funderIndex < listOfAddressSentMoney.length; funderIndex++) {
     address funder = listOfAddressSentMoney[funderIndex];
     addressToAmountSent[funder] = 0; //This sets the amount sent by each address to 0, "withdrawing" their funds.
@@ -162,9 +160,9 @@ contract AddNumbers {
 
     function addTwoNumbers(uint256 num1, uint256 num2) public pure returns (uint256) {
         // Using the extension style {because of the using/for}
-        return num1.add(num2); //can call the 1st parameter before the function
-        //not using extension style
-        MathLibrary.add(num1, num2);
+        return num1.add(num2); //can call the 1st parameter before the function and then second and rest parameters after
+        //not using extension style, need to use the library name aswell
+        MathLibrary.add(num1, num2); 
     }
 }
 
@@ -176,7 +174,7 @@ contract MyContract {
  address public owner;
 
  constructor () {
-    owner = msg.sender; //// Sets the deployer as the contract owner
+    owner = msg.sender; // Sets the deployer as the contract owner
     }
  }
 
@@ -202,3 +200,6 @@ contract FallBackExample {
 
 
 }
+
+// !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!
+// !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!

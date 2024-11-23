@@ -59,14 +59,12 @@ contract SimpleStorage {
 // | private    | Yes              | No               | No               |
 
 contract SimpleStorage {
-  uint256 public fav;  //created a variable called 'fav' without assigning a value //0
+  uint256 public fav;  //created a variable called 'fav' without assigning a value //default is 0
   //The public keyword automatically generates a getter function for this variable
   //allowing external users or contracts to read its value without explicitly creating a getter function.
 
-
 //function that takes an argument of type uint256 and stores it in the state variable fav.
 //The underscore _ is often used to differentiate between local variables and state variables.
-
   function store(uint256 _fav) public {
     fav = _fav; //This assigns the value passed to the _fav parameter to the state variable fav, updating the value of fav stored on the blockchain.
     fav = fav + 1;
@@ -74,7 +72,7 @@ contract SimpleStorage {
   //State-modifying function: Because this function changes the value of fav, it alters the blockchain state. 
   //Since it changes the state, it will require gas to be executed when called in a transaction.
 
-//This function is a view function, meaning it can read but not modify the blockchain's state.
+//This is a view function, meaning it can read but not modify the blockchain's state.
 //public: The function can be called by anyone, both from within the contract and externally by users or other contracts.
 //Since this function only reads the value of fav and doesn’t change it, it qualifies as a view function.
   function restore() public view returns(uint256){
@@ -88,11 +86,10 @@ contract SimpleStorage {
 //Gas Costs: Since view and pure functions don't modify the blockchain state, they don’t require gas when called externally (e.g., via a call). However, if they are called within a function that modifies state, they will consume gas as part of the overall transaction
 
 //rewriting clean function
-
 contract MyFirstContract {
     uint256 number = 13;
 
-//uint256 newNumer: This is a parameter of type uint256 that the function accepts when called. It represents the numer that the user wants to store.
+//uint256 newNumer: This is a parameter of type uint256 that the function accepts when called. It represents the number that the user wants to store.
     function double(uint256 newNumer) public {
         // newNumer*number = number; //wrong way to declare!!
         number = newNumer * number;  // Multiply and assign the result to 'number'
@@ -104,8 +101,7 @@ contract MyFirstContract {
 }
 
 
-
-//recreating an object?
+//Recreating an object? Struct
 contract SimpleStorage {
   uint256 myFav; //created a variable without assigning a value //0
 
@@ -114,21 +110,17 @@ contract SimpleStorage {
     uint256 favoriteNumber;
     string name;
   }
-
-  // Example of creating a new 'Person' object directly.
-  //  Person public newPerson = Person(7, "leti"); //creting a new object
+  // Example of creating a new 'Person' struct/object directly.
+   Person public newPerson = Person(7, "leti"); //creting a new object
   // Another way to initialize using named parameters, which improves readability.
-  //  Person public newPerson = Person({favoriteNumber: 7, name: "leticia"});
-
-  // uint256[] listOfPeople; //the brackets declare the array
+   Person public newPerson = Person({favoriteNumber: 7, name: "leticia"});
 
   // Declares a dynamic array of 'Person' structs. Dynamic arrays can grow in size.
   // Each element of this array will be a 'Person' struct.
   Person[] public listOfPeople;
 
-//function to push a new person
 // Function 'addPerson' adds a new 'Person' to the 'listOfPeople' array.
-// It takes two arguments: (stored in memory, as it's not stored on-chain).
+// It takes two arguments: string and uint256 (string must b stored in memory, as it's not stored on-chain).
  function addPerson(string memory _name, uint256 _favoriteNumber) public {
     listOfPeople.push(Person( _favoriteNumber, _name));
     // 'Person(_favoriteNumber, _name)' creates a new 'Person' struct and adds it to the array.
@@ -139,8 +131,7 @@ contract SimpleStorage {
 //Syntax 
 //mapping(keyType => valueType) visibility mappingName;
 //keyType: The data type of the key. Keys can be any value type (e.g., uint, address, string).
-//valueType: The data type of the value associated with each key. Values can be any type, including structs and arrays.
-
+//valueType: The data type of the value associated with each key that will be returned. Values can be any type, including structs and arrays.
 
 //easy example
 contract SimpleStorage {
@@ -152,14 +143,15 @@ contract SimpleStorage {
   
   Person[] public listOfPeople;
 
-  // Declare a mapping that links a name (string) to a favorite number (uint256)
-  //syntax mapping(key -> type) visibility 
+  // Declare a mapping that links a keyType name (string) to a value: favorite number (uint256)
+  //syntax mapping(key -> type) visibility mappingName;
   mapping(string => uint256) public giveNameGetFavoriteNumber;
 
   //function to add a new person to the list and update the mapping
  function addPerson(string memory _name, uint256 _favoriteNumber) public {
   // Add a new Person struct to the array with the provided name and favorite number
     listOfPeople.push(Person( _favoriteNumber, _name));
+
  // Update the mapping with the person's name as the key and their favorite number as the value
     giveNameGetFavoriteNumber[_name] = _favoriteNumber;
  }
@@ -188,37 +180,36 @@ contract SimpleBank {
 
 
 // ------------------------------------ IMPORT --------------------------
-//SYNTAX import {ContractOrLibrary} from "filepath";
+//SYNTAX: import {ContractOrLibrary} from "filepath";
 
-
-
-//importing a contract to another, this can make one contract run/deploy another
+//importing a contract to use in another, this can make one contract run/deploy another
 import {SimpleStorage2} from "SimpleStorage.sol"; //The curly braces allow to specify a specific contract or library from the file.
-//can also without braces, like import "SimpleStorage.sol" if you want access to all its contents.
+//can also without braces, like import "SimpleStorage.sol" if you want access to all its contents/contracts in the file.
 
 contract StorageFactory {
-
-//type visibility variable
+//type visibility variable, this is like a common variable declaration but the type is the CONTRACT
  SimpleStorage2 public simpleStorage; // first w capital letter is reffering to the contract itself and the second reffers to the 'variable name'
  //SimpleStorage2 refers to the contract type (from SimpleStorage.sol), while simpleStorage is the variable name.
 
-//after calling createSimpleStorageContract(), you have a freshly deployed SimpleStorage2 contract that you can use and interact with via simpleStorage.
+ //after calling createSimpleStorageContract(), you have a freshly deployed SimpleStorage2 contract that you can use and interact with via simpleStorage.
+ //new SimpleStorage2(): The keyword new is used to create a brand new instance *Copy* and deploy a contract in Solidity. 
+ //When the new SimpleStorage2 instance is created, it’s assigned to simpleStorage, which is a state variable in StorageFactory.
+ //This means that from within StorageFactory, you can interact with this deployed instance through the simpleStorage variable.
 function createSimpleStorageContract() public {
-    simpleStorage = new SimpleStorage2(); //the keyword new is how solidity knows to deploy a contract
-    //new SimpleStorage2(): The keyword new is used to create a brand new instance *Copy and deploy a contract in Solidity. 
-    //When the new SimpleStorage2 instance is created, it’s assigned to simpleStorage, which is a state variable in StorageFactory.
-    //This means that from within StorageFactory, you can interact with this deployed instance through the simpleStorage variable.
+    simpleStorage= new SimpleStorage2(); //the keyword new is how solidity knows to deploy a contract
+
     }
-   // ps: It does not pull or interact with a pre-existing deployed SimpleStorage2 contract.
-  //It creates and deploys a new instance of SimpleStorage2 on the blockchain each time new SimpleStorage2() is called.
+
+  // PS : It does not pull or interact with a pre-existing deployed SimpleStorage2 contract.
+  //Instead, it creates and deploys a new instance of SimpleStorage2 on the blockchain each time new SimpleStorage2() is called.
     
 }
 
 
 // --------------------------------- INTERACTING WITH CONTRACTS ABI ----------------------------------
-
 //interacting with the new instance of imported contract
 
+//regular import
 import {SimpleStorageOriginal} from "SimpleStorage.sol";
 
 
@@ -262,14 +253,14 @@ contract AddFiveToFavoriteNumber is SimpleStorageOriginal {
 //since we are overriding a function from SimpleStorageOriginal the function name HAS to be the same 
 //the keyword override has to be in the function 
 //about _favoriteNumber The parameter type must remain the same (e.g. uint256), but the parameter name can be different. However, for clarity and consistency, developers often keep the parameter names the same.
-//_favoriteNumber is just the name used within the AddFiveToFavoriteNumber contract.
+//_favoriteNumber is just the name used within the function in the SimpleStorageOriginal contract.
     function store (uint256 _favoriteNumber) public override{
         myFavoriteNumber = _favoriteNumber + 5;
 
     }
 
+////example in SimpleStorageOriginal, same function in the SimpleStorageOriginal contract
 //PS: the function you want to make overridable needs the 'virtual' keyword. This specifies that the function is open to being overridden by derived contracts.
-//example in SimpleStorageOriginal
  function store(uint256 _favoriteNumber) public virtual {
         myFavoriteNumber = _favoriteNumber;
     }
