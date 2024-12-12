@@ -136,8 +136,7 @@ contract SimpleStorage {
 //easy example
 contract SimpleStorage {
 
-  struct Person{
-    uint256 favoriteNumber;
+  struct Person{uint256 favoriteNumber;
     string name;
   }
   
