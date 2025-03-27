@@ -71,7 +71,6 @@ contract SimpleStorage {
     fav = fav + 1; //State-modifying function: Because this function changes the value of fav, it alters the blockchain state. 
   //Since it changes the state, it will require gas to be executed when called in a transaction.
   }
- 
 
 //This is a view function, meaning it can read but not modify the blockchain's state.
 //public: The function can be called by anyone, both from within the contract and externally by users or other contracts.
@@ -101,7 +100,6 @@ contract MyFirstContract {
     }
 }
 
-
 //Recreating an object? Struct
 contract SimpleStorage {
   uint256 myFav; //created a variable without assigning a value //0
@@ -111,7 +109,7 @@ contract SimpleStorage {
     uint256 favoriteNumber;
     string name;
   }
-  // Example of creating a new 'Person' struct/object directly.
+  // Example of creating a new 'Person' struct/object directly parameters will be in the same order.
    Person public newPerson = Person(7, "leti"); //creting a new object
   // Another way to initialize using named parameters, which improves readability.
    Person public newPerson = Person({favoriteNumber: 7, name: "leticia"});
@@ -121,7 +119,7 @@ contract SimpleStorage {
   Person[] public listOfPeople;
 
 // Function 'addPerson' adds a new 'Person' to the 'listOfPeople' array.
-// It takes two arguments: string and uint256 (string must b stored in memory, as it's not stored on-chain).
+// It takes two arguments: string and uint256 (string must be stored in memory, as it's not stored on-chain).
  function addPerson(string memory _name, uint256 _favoriteNumber) public {
     listOfPeople.push(Person( _favoriteNumber, _name));
     // 'Person(_favoriteNumber, _name)' creates a new 'Person' struct and adds it to the array.
@@ -137,7 +135,8 @@ contract SimpleStorage {
 //easy example
 contract SimpleStorage {
 
-  struct Person{uint256 favoriteNumber;
+  struct Person{
+    uint256 favoriteNumber;
     string name;
   }
   
@@ -158,9 +157,9 @@ contract SimpleStorage {
 }
 
 
-// Define a contract called SimpleBank
+//another example
 contract SimpleBank {
-    
+  
     // Define a mapping to link each address (user) to a balance (uint256)
     // `public` visibility lets anyone check any address's balance
     mapping(address => uint256) public balances;
