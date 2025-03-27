@@ -13,10 +13,10 @@ contract SimpleStorage {
     
     //using boolean to create a variable and give it a value
     bool hasFavoriteNumber = true;
-    //can algo give a value using unit - unsigned integer
+    //can algo give a value using uint - unsigned integer
     uint256 favoriteNumber = 88;
-    //can also be int, int can be positive or negative
-    int256 favoriteNumber = -3;
+    //can also be int, integer can be positive or negative
+    int256 favoriteNumberInt = -3;
     //or write some value
     string favoriteCity = "Paris";
     //the address type
@@ -24,7 +24,7 @@ contract SimpleStorage {
     //using bytes , the largest byte is 32
     bytes32 = favoriteBytes32 = "Animal" //0x3j34fd will represent the hex of what the byte is
 
-//all the types has a default value for eg uint 256 has default value of 0, boolean is false...
+//all the types has a default value (e.g. uint 256 has default value of 0, boolean is false...)
 }
 
 // variables should generally be lowercase or in camelCase
@@ -33,7 +33,7 @@ contract SimpleStorage {
 
 // ------------------------------------- FUNCTIONS --------------------------
 // Solidity Function Visibility Specifiers
-// default is internal is no keyword is given
+// default is internal if no keyword is given on function
 // 1. **Public**: 
 //    - Can be called both internally and externally.
 //    - Use when the function should be accessible by anyone.
@@ -59,18 +59,19 @@ contract SimpleStorage {
 // | private    | Yes              | No               | No               |
 
 contract SimpleStorage {
-  uint256 public fav;  //created a variable called 'fav' without assigning a value //default is 0
+  uint256 public fav;  //created a state variable called 'fav' without assigning a value //default is 0
   //The public keyword automatically generates a getter function for this variable
   //allowing external users or contracts to read its value without explicitly creating a getter function.
+  //if visibility is private it will need a getter function
 
 //function that takes an argument of type uint256 and stores it in the state variable fav.
 //The underscore _ is often used to differentiate between local variables and state variables.
   function store(uint256 _fav) public {
     fav = _fav; //This assigns the value passed to the _fav parameter to the state variable fav, updating the value of fav stored on the blockchain.
-    fav = fav + 1;
-  }
-  //State-modifying function: Because this function changes the value of fav, it alters the blockchain state. 
+    fav = fav + 1; //State-modifying function: Because this function changes the value of fav, it alters the blockchain state. 
   //Since it changes the state, it will require gas to be executed when called in a transaction.
+  }
+ 
 
 //This is a view function, meaning it can read but not modify the blockchain's state.
 //public: The function can be called by anyone, both from within the contract and externally by users or other contracts.
