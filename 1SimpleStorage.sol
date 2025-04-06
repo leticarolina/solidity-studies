@@ -161,8 +161,8 @@ contract SimpleStorage {
 contract SimpleBank {
   
     // Define a mapping to link each address (user) to a balance (uint256)
-    // `public` visibility lets anyone check any address's balance
-    mapping(address => uint256) public balances;
+    // `public` visibility lets anyone check any address's balance, so private we create our own getter function
+    mapping(address => uint256) private balances;
 
     // A function to allow users to deposit Ether into their own balance
     function deposit() public payable {
@@ -186,7 +186,7 @@ import {SimpleStorage2} from "SimpleStorage.sol"; //The curly braces allow to sp
 //can also without braces, like import "SimpleStorage.sol" if you want access to all its contents/contracts in the file.
 
 contract StorageFactory {
-//type visibility variable, this is like a common variable declaration but the type is the CONTRACT
+//type visibility variable, this is like a common variable declaration but the type IS the CONTRACT
  SimpleStorage2 public simpleStorage; // first w capital letter is reffering to the contract itself and the second reffers to the 'variable name'
  //SimpleStorage2 refers to the contract type (from SimpleStorage.sol), while simpleStorage is the variable name.
 
@@ -195,7 +195,7 @@ contract StorageFactory {
  //When the new SimpleStorage2 instance is created, it’s assigned to simpleStorage, which is a state variable in StorageFactory.
  //This means that from within StorageFactory, you can interact with this deployed instance through the simpleStorage variable.
 function createSimpleStorageContract() public {
-    simpleStorage= new SimpleStorage2(); //the keyword new is how solidity knows to deploy a contract
+    simpleStorage= new SimpleStorage2(); //the keyword 'new' is how solidity knows to deploy a contract
 
     }
 
@@ -213,13 +213,13 @@ import {SimpleStorageOriginal} from "SimpleStorage.sol";
 
 
 contract Factory {
-//SimpleStorageOriginal[]: Declares a dynamic array to store multiple instances of the  type SimpleStorageOriginal.
+//SimpleStorageOriginal[]: Declares a dynamic array to store multiple instances of the type SimpleStorageOriginal.
 //but it does NOT declare the type so that's why SimpleStorageOriginal will be repeated in the fucntion (to declare a type)
 //Here, SimpleStorageOriginal specifies the type of each element in the array listOfGeneratedContracts
  SimpleStorageOriginal[] public listOfGeneratedContracts; 
 
 //When you’re creating a new variable for the first time, you always have to specify the type so that the compiler knows what kind of data it will hold. 
-//This is why you write SimpleStorageOriginal generatedContractVariable.
+//This is why you write 'SimpleStorageOriginal generatedContractVariable'
  function createSimpleStorageContract() public {
  //SimpleStorageOriginal is a contract type in this context, just like uint256 is a type for numbers. 
     SimpleStorageOriginal generatedContractVariable = new SimpleStorageOriginal(); 
@@ -258,7 +258,7 @@ contract AddFiveToFavoriteNumber is SimpleStorageOriginal {
 
     }
 
-////example in SimpleStorageOriginal, same function in the SimpleStorageOriginal contract
+//example in the SimpleStorageOriginal that was overriden, same function in the SimpleStorageOriginal contract
 //PS: the function you want to make overridable needs the 'virtual' keyword. This specifies that the function is open to being overridden by derived contracts.
  function store(uint256 _favoriteNumber) public virtual {
         myFavoriteNumber = _favoriteNumber;
