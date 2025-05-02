@@ -13,7 +13,7 @@ contract SimpleStorage {
     
     //using boolean to create a variable and give it a value
     bool hasFavoriteNumber = true;
-    //can algo give a value using uint - unsigned integer
+    //can give a value using uint - unsigned integer
     uint256 favoriteNumber = 88;
     //can also be int, integer can be positive or negative
     int256 favoriteNumberInt = -3;
@@ -63,6 +63,8 @@ contract SimpleStorage {
   //The public keyword automatically generates a getter function for this variable
   //allowing external users or contracts to read its value without explicitly creating a getter function.
   //if visibility is private it will need a getter function
+  // PS for public variables - In Solidity,  state variable as public, the name of that getter is exactly the name of the variable, used like a function.
+
 
 //function that takes an argument of type uint256 and stores it in the state variable fav.
 //The underscore _ is often used to differentiate between local variables and state variables.
@@ -74,11 +76,12 @@ contract SimpleStorage {
 
 //This is a view function, meaning it can read but not modify the blockchain's state.
 //public: The function can be called by anyone, both from within the contract and externally by users or other contracts.
-//Since this function only reads the value of fav and doesn’t change it, it qualifies as a view function.
+//Since this function only reads the value of fav and doesn’t change it, it qualifies as a 'view' function.
   function restore() public view returns(uint256){
     return fav;
   }
 }
+
 
 //View and pure functions
 //View functions can read data from the blockchain but cannot modify it. For example, the restore() function is marked as view because it reads the value of fav but doesn't change it.
@@ -87,7 +90,9 @@ contract SimpleStorage {
 
 //rewriting clean function
 contract MyFirstContract {
-    uint256 number = 13;
+    uint256 public number = 13;
+
+    error ZeroInput(); // custom error 
 
 //uint256 newNumer: This is a parameter of type uint256 that the function accepts when called. It represents the number that the user wants to store.
     function double(uint256 newNumer) public {
@@ -100,19 +105,58 @@ contract MyFirstContract {
     }
 }
 
-//Recreating an object? Struct
+//example tests for this basic contract above
+contract MyFirstContractTest is Test {
+    MyFirstContract contractInstance;
+
+    function setUp() public {
+        contractInstance = new MyFirstContract();
+    }
+
+    function testInitialNumberIs13() public {
+        uint256 stored = contractInstance.reveal();
+        assertEq(stored, 13, "number not 13");
+    }
+
+    function testDoubleFunctionWorks() public {
+        contractInstance.double(2);
+        uint256 result = contractInstance.reveal();
+        assertEq(result, 26, "After times 2, number should be 26");
+    }
+
+    function testDoubleWithZero() public {
+        contractInstance.double(0);
+        uint256 result = contractInstance.reveal();
+        assertEq(result, 0, "Should result in 0");
+    }
+
+     function testRevertWhenInputIsZero() public {
+        vm.expectRevert(MyFirstContract.ZeroInput.selector); // tell Foundry you expect the revert , What is .selector?
+// Every function and custom error in Solidity has a 4-byte selector. The .selector is the 4-byte fingerprint of that error.
+        contractInstance.double(0); //  the revert
+    }
+
+    function testDoubleWithNegativeFails() public {
+        // Solidity doesn't support negative uints, so trying to pass a negative value isn’t possible here.
+    }
+}
+
+
+
+//Recreating an object? use Struct
 contract SimpleStorage {
   uint256 myFav; //created a variable without assigning a value //0
 
-// Struct 'Person' defines a custom data type 
+// Struct 'Person' defines a custom data type with for example stings, bool, uint256...
   struct Person{
     uint256 favoriteNumber;
     string name;
   }
-  // Example of creating a new 'Person' struct/object directly parameters will be in the same order.
-   Person public newPerson = Person(7, "leti"); //creting a new object
-  // Another way to initialize using named parameters, which improves readability.
-   Person public newPerson = Person({favoriteNumber: 7, name: "leticia"});
+
+  // Example of creating a new 'Person' struct/object, the parameters will be in the same order.
+   Person public newPerson1 = Person(7, "leti"); //creting a new object
+  // Another way to initialize struct using named parameters, which improves readability.
+   Person public newPerson2 = Person({favoriteNumber: 7, name: "leticia"});
 
   // Declares a dynamic array of 'Person' structs. Dynamic arrays can grow in size.
   // Each element of this array will be a 'Person' struct.
@@ -123,6 +167,7 @@ contract SimpleStorage {
  function addPerson(string memory _name, uint256 _favoriteNumber) public {
     listOfPeople.push(Person( _favoriteNumber, _name));
     // 'Person(_favoriteNumber, _name)' creates a new 'Person' struct and adds it to the array.
+    // cannot .push(newPerson1) into listOfPeople as-is, because newPerson1 is a storage variable, and listOfPeople.push() expects a memory struct 
  }
 }
 
