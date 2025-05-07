@@ -188,7 +188,7 @@ contract SimpleStorage {
   Person[] public listOfPeople;
 
   // Declare a mapping that links a keyType name (string) to a value: favorite number (uint256)
-  //syntax mapping(key -> type) visibility mappingName;
+  //syntax mapping(key -> value) visibility mappingName;
   mapping(string => uint256) public giveNameGetFavoriteNumber;
 
   //function to add a new person to the list and update the mapping
@@ -196,7 +196,7 @@ contract SimpleStorage {
   // Add a new Person struct to the array with the provided name and favorite number
     listOfPeople.push(Person( _favoriteNumber, _name));
 
- // Update the mapping with the person's name as the key and their favorite number as the value
+ // Update the mapping with the person's name as the key, and their favorite number as the value
     giveNameGetFavoriteNumber[_name] = _favoriteNumber;
  }
 }
@@ -205,7 +205,7 @@ contract SimpleStorage {
 //another example
 contract SimpleBank {
   
-    // Define a mapping to link each address (user) to a balance (uint256)
+    // Define a mapping to link each user (address) to a balance (uint256)
     // `public` visibility lets anyone check any address's balance, so private we create our own getter function
     mapping(address => uint256) private balances;
 
@@ -218,7 +218,7 @@ contract SimpleBank {
 
     // A function that lets users check their balance
     function getBalance() public view returns (uint256) {
-        return balances[msg.sender]; // Return the balance associated with the caller's address
+        return balances[msg.sender]; // Return the balance associated with the caller's 'address'
     }
 }
 
@@ -228,10 +228,11 @@ contract SimpleBank {
 
 //importing a contract to use in another, this can make one contract run/deploy another
 import {SimpleStorage2} from "SimpleStorage.sol"; //The curly braces allow to specify a specific contract or library from the file.
-//can also without braces, like import "SimpleStorage.sol" if you want access to all its contents/contracts in the file.
+//can also without braces, like >import "SimpleStorage.sol"< if you want access to all its contents/contracts in the file.
 
 contract StorageFactory {
-//type visibility variable, this is like a common variable declaration but the type IS the CONTRACT
+// this is like a common variable declaration but the type IS the CONTRACT
+///type visibility variable
  SimpleStorage2 public simpleStorage; // first w capital letter is reffering to the contract itself and the second reffers to the 'variable name'
  //SimpleStorage2 refers to the contract type (from SimpleStorage.sol), while simpleStorage is the variable name.
 
@@ -241,7 +242,6 @@ contract StorageFactory {
  //This means that from within StorageFactory, you can interact with this deployed instance through the simpleStorage variable.
 function createSimpleStorageContract() public {
     simpleStorage= new SimpleStorage2(); //the keyword 'new' is how solidity knows to deploy a contract
-
     }
 
   // PS : It does not pull or interact with a pre-existing deployed SimpleStorage2 contract.
@@ -253,13 +253,29 @@ function createSimpleStorageContract() public {
 // --------------------------------- INTERACTING WITH CONTRACTS ABI ----------------------------------
 //interacting with the new instance of imported contract
 
+contract SimpleStorageOriginal {
+  uint256 public favoriteNumber; 
+  
+  function store(uint256 _favoriteNumber) public {
+  favoriteNumber = _favoriteNumber; 
+  favoriteNumber = _favoriteNumber + 1;
+  }
+
+  function retrieve() public view returns (uint256){
+    return favoriteNumber;
+  }
+
+}
+
+
+//_____
+
 //regular import
 import {SimpleStorageOriginal} from "SimpleStorage.sol";
 
-
 contract Factory {
 //SimpleStorageOriginal[]: Declares a dynamic array to store multiple instances of the type SimpleStorageOriginal.
-//but it does NOT declare the type so that's why SimpleStorageOriginal will be repeated in the fucntion (to declare a type)
+//but it does NOT declare the type so that's why SimpleStorageOriginal will be repeated in the function (to declare a type)
 //Here, SimpleStorageOriginal specifies the type of each element in the array listOfGeneratedContracts
  SimpleStorageOriginal[] public listOfGeneratedContracts; 
 
@@ -267,8 +283,8 @@ contract Factory {
 //This is why you write 'SimpleStorageOriginal generatedContractVariable'
  function createSimpleStorageContract() public {
  //SimpleStorageOriginal is a contract type in this context, just like uint256 is a type for numbers. 
-    SimpleStorageOriginal generatedContractVariable = new SimpleStorageOriginal(); 
-    listOfGeneratedContracts.push(generatedContractVariable);
+    SimpleStorageOriginal generatedContract = new SimpleStorageOriginal(); 
+    listOfGeneratedContracts.push(generatedContract);
     }
 
 //_indexOfGenerateContract: Specifies which instance of SimpleStorageOriginal you want to interact with (using the array index)
