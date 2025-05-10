@@ -6,7 +6,8 @@
 //SPDX-License-Identifier: This part is a directive indicating that you are declaring the license for your code.
 //MIT: This refers to the MIT License, which is a widely used open-source license. It allows developers to freely use, modify, and distribute the software, as long as they include the original license notice in any copies of the software.
 
-pragma solidity >=0.8.19; //stating our version
+pragma solidity >=0.8.19; //stating our version (equal or greater than 0.8.19) of solidity compiler to use)
+pragma solidity >0.8.19 <0.9.0; //stating our version (greater than 0.8.19 and less than 0.9.0) of solidity compiler to use)
 
 contract SimpleStorage {
     //basic types: boolean, uint, int, address, bytes
@@ -17,19 +18,18 @@ contract SimpleStorage {
     uint256 favoriteNumber = 88;
     //can also be int, integer can be positive or negative
     int256 favoriteNumberInt = -3;
-    //or write some value
+    //write some value
     string favoriteCity = "Paris";
     //the address type
     address myETHAddress = 0x76Cdd5a850a5B721A4f8285405d8a7ab5c3fc7E4;
     //using bytes , the largest byte is 32
-    bytes32 = favoriteBytes32 = "Animal" //0x3j34fd will represent the hex of what the byte is
-
-//all the types has a default value (e.g. uint 256 has default value of 0, boolean is false...)
+    bytes32 favoriteBytes32 = "Animal"; //0x3j34fd will represent the hex of what the byte is
 }
+//all the types has a default value (e.g. uint 256 has default value of 0, boolean is false...)
+
 
 // variables should generally be lowercase or in camelCase
 //contract names and struct names usually start with uppercase letters (PascalCase).
-
 
 // ------------------------------------- FUNCTIONS --------------------------
 // Solidity Function Visibility Specifiers
@@ -87,6 +87,7 @@ contract SimpleStorage {
 //View functions can read data from the blockchain but cannot modify it. For example, the restore() function is marked as view because it reads the value of fav but doesn't change it.
 //Pure functions neither read from nor write to the blockchain. They are used for purely computational purposes, such as performing calculations using only the inputs passed to the function. They cannot access state variables or any blockchain data.
 //Gas Costs: Since view and pure functions don't modify the blockchain state, they don’t require gas when called externally (e.g., via a call). However, if they are called within a function that modifies state, they will consume gas as part of the overall transaction
+//like if it's called within a function that does modify state
 
 //rewriting clean function
 contract MyFirstContract {
