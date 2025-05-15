@@ -8,6 +8,7 @@
 
 pragma solidity >=0.8.19; //stating our version (equal or greater than 0.8.19) of solidity compiler to use)
 pragma solidity >0.8.19 <0.9.0; //stating our version (greater than 0.8.19 and less than 0.9.0) of solidity compiler to use)
+pragma solidity ^0.8.19; //stating our version (equal or greater than 0.8.19) of solidity compiler to use)
 
 contract SimpleStorage {
     //basic types: boolean, uint, int, address, bytes
@@ -24,13 +25,18 @@ contract SimpleStorage {
     address myETHAddress = 0x76Cdd5a850a5B721A4f8285405d8a7ab5c3fc7E4;
     //using bytes , the largest byte is 32
     bytes32 favoriteBytes32 = "Animal"; //0x3j34fd will represent the hex of what the byte is
-}
-//all the types has a default value (e.g. uint 256 has default value of 0, boolean is false...)
+        bytes myDynamicBytes = "Can be any value"; // Default: 0x0, dynamic size
 
+}
+
+// ------------------------------------- VARIABLES --------------------------
+//all the types has a default value (e.g. uint 256 has default value of 0, boolean is false...)
 
 // variables should generally be lowercase or in camelCase
 //contract names and struct names usually start with uppercase letters (PascalCase).
 
+//if something is referenc type, it means that it is not stored directly in the variable but rather a reference to where the data is stored.
+//so need memory or storage to tell solidity where to store the data.
 // ------------------------------------- FUNCTIONS --------------------------
 // Solidity Function Visibility Specifiers
 // default is internal if no keyword is given on function
@@ -66,12 +72,13 @@ contract SimpleStorage {
   // PS for public variables - In Solidity,  state variable as public, the name of that getter is exactly the name of the variable, used like a function.
 
 
+//State-modifying function: Because this function changes the value of fav, it alters the blockchain state. 
+//Since it changes the state, it will require gas to be executed when called in a transaction.
 //function that takes an argument of type uint256 and stores it in the state variable fav.
 //The underscore _ is often used to differentiate between local variables and state variables.
   function store(uint256 _fav) public {
     fav = _fav; //This assigns the value passed to the _fav parameter to the state variable fav, updating the value of fav stored on the blockchain.
-    fav = fav + 1; //State-modifying function: Because this function changes the value of fav, it alters the blockchain state. 
-  //Since it changes the state, it will require gas to be executed when called in a transaction.
+    fav = fav + 1; 
   }
 
 //This is a view function, meaning it can read but not modify the blockchain's state.
@@ -82,6 +89,16 @@ contract SimpleStorage {
   }
 }
 
+contract SimpleStorage {
+  uint256 public fav;  //state variable
+  
+  //_fav is local variable
+  function store(uint256 _fav) public {
+  fav = _fav; 
+  //Assigns the value passed to the _fav local variable to the state variable fav 
+  //Essentially updating the value of fav stored on the blockchain.
+  }
+}
 
 //View and pure functions
 //View functions can read data from the blockchain but cannot modify it. For example, the restore() function is marked as view because it reads the value of fav but doesn't change it.
@@ -172,6 +189,27 @@ contract SimpleStorage {
  }
 }
 
+//-------------------------------------   STRUCTS --------------------------
+ //structs are a a way to group multiple variables of different data types under a single entity, just like an object in JavaScript.
+
+
+    struct Person {
+        uint256 age;
+        string name;
+        bool isMember;
+    }
+
+//Here, you’re creating a new instance of the Person struct with the following values
+//The reason you repeat Person in the initialization is that you are instantiating a new struct instance.
+    Person public leticia = Person(1997, "Leticia", true);
+
+    // Function to update a person’s information
+    function updatePerson(uint256 _age, string memory _name, bool _isMember) public {
+        leticia.age = _age;
+        leticia.name = _name;
+        leticia.isMember = _isMember;
+    }
+
 // ------------------------------------- MAPPING --------------------------
 //Syntax 
 //mapping(keyType => valueType) visibility mappingName;
@@ -223,6 +261,74 @@ contract SimpleBank {
     }
 }
 
+//Mappings with Structs
+//Mappings can also be used with structs to create more complex data structures.
+struct User {
+    uint256 balance;
+    bool verified;
+}
+
+mapping(address => User) public users; // Mapping each user (address) to a User struct
+
+function updateUser(address _user, uint256 _balance) public {
+    users[_user].balance = _balance; // Update the balance of the user
+    users[_user].verified = true; // Mark the user as verified
+}
+
+//deleting a mapping
+//This will reset the value associated with the key to its default value (0 for uint256, false for bool, etc.).
+mapping(address => uint256) public balances;
+
+function clearBalance(address _user) external {
+    delete balances[_user];  // Resets balance to 0
+}
+// ------------------------------------- MEMORY VS CALLDATA --------------------------
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract DataLocationExample {
+
+    function processMemory(string memory data) public pure returns (string memory) {
+        data = "Modified in Memory";
+        return data;
+    }
+
+    function processCalldata(string calldata data) public pure returns (string memory) {
+        // This will throw an error: 
+        data = "Cannot modify calldata";
+        return data;
+    }
+}
+
+//---------------------- MEMORY --------------------------
+//Memory data is temporary and disappears after the function ends.
+//But if you explicitly move that data to a storage location, it will persist even after the function ends.
+//The push operation in the example transfers data from memory to storage, allowing us to access it later.
+//That’s why you can still access the struct data later using the array index, even though the original memory struct has been wiped out.
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract MemoryVsStorage {
+
+    struct Person {
+        uint256 id;
+        string name;
+    }
+
+    // This array is in storage by default
+    Person[] public people;
+
+    // Function that stores a person
+    function addPerson(uint256 _id, string memory _name) public {
+        // The `Person` struct instance is created in memory
+        Person memory newPerson = Person(_id, _name); // This is a temporary instance of the struct, only existing during this function call
+
+        // Now, we push the `newPerson` struct to the `people` array
+        // This action stores it in storage, not memory
+        people.push(newPerson); // The `push` moves the data from memory to storage
+    }
+}
 
 // ------------------------------------ IMPORT --------------------------
 //SYNTAX: import {ContractOrLibrary} from "filepath";
@@ -325,3 +431,90 @@ contract AddFiveToFavoriteNumber is SimpleStorageOriginal {
  function store(uint256 _favoriteNumber) public virtual {
         myFavoriteNumber = _favoriteNumber;
     }
+
+
+
+//--------------------------deployed to zksync sepolia testnet via remix
+// 0x9768942ad4c0c04e48beb2f297826bd43ff683e21d7dcd86ba8795c8e0a6c4d8
+contract FamilyProfile {
+
+  struct Person {
+   uint256 birthYear;
+   string name;
+ }
+
+  //created new instance of the Person struct, must follow order of the data struct
+  Person public myself = Person(1997, "Leticia Azevedo");
+  //If using named arguments, the order does not matter.
+  Person public myMom = Person({birthYear: 1977, name: "Katia"});
+
+ // Function to update a struct, only updates the 'myself' struct instance.
+ function updatePerson(uint256 _birthYear, string memory _name) public {
+    myself.birthYear = _birthYear;
+    myself.name = _name;
+  }
+}
+// --------------------------------- ENUMS ----------------------------------
+//Enums are a way to define a custom type with a finite set of possible values.
+//Enums are useful for representing a state or condition that can take on a limited number of values.
+//Enums are often used to make code more readable and maintainable by replacing magic numbers or strings with meaningful names.
+//Enums are stored as uint256 under the hood, starting from 0 for the first value, 1 for the second, and so on.
+//Enums are a way to define a custom type with a finite set of possible values.
+//Enums are useful for representing a state or condition that can take on a limited number of values.
+//Enums are often used to make code more readable and maintainable by replacing magic numbers or strings with meaningful names.
+//Enums are stored as uint256 under the hood, starting from 0 for the first value, 1 for the second, and so on.
+//Enums are a way to define a custom type with a finite set of possible values. 
+
+
+
+// Pure function because it doesn't read/modify the state of the contract.
+function add(uint256 a, uint256 b) public pure returns (uint256) {
+    return a + b;  // No access to state variables
+}
+
+
+function withdrawSecure() public {
+    uint256 amount = balances[msg.sender];
+
+    //State update FIRST
+    balances[msg.sender] = 0;
+
+    //External call AFTER state is safe
+    (bool success, ) = msg.sender.call{value: amount}("");
+    require(success, "Transfer failed");
+}
+
+
+bool private locked;
+
+modifier noReentrant() {
+    require(!locked, "Reentrant call");
+    locked = true;
+    _;
+    locked = false;
+}   
+
+// withdraw function will use the noReentrant modifier
+function withdrawSecure() public noReentrant {
+}
+
+//------------------ VERIFICATION --------------------------
+mapping(address => bool) public isVerified; // Mapping to track verified addresses
+address public admin; // The address of the admin who can verify/revoke addresses
+
+constructor() {
+    admin = msg.sender; 
+}
+
+modifier onlyAdmin() {
+    require(msg.sender == admin, "Not admin"); // Only allow the admin to call the function
+    _;
+}
+
+function verifyAddress(address _user) external onlyAdmin {
+    isVerified[_user] = true;  // Set the address as verified
+}
+
+function revokeAddress(address _user) external onlyAdmin {
+    isVerified[_user] = false; // Revoke the verification
+}
