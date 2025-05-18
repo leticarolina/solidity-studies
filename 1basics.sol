@@ -201,7 +201,7 @@ contract SimpleStorage {
 
 //Here, you’re creating a new instance of the Person struct with the following values
 //The reason you repeat Person in the initialization is that you are instantiating a new struct instance.
-    Person public leticia = Person(1997, "Leticia", true);
+    Person leticia = Person(1997, "Leticia", true);
 
     // Function to update a person’s information
     function updatePerson(uint256 _age, string memory _name, bool _isMember) public {
@@ -432,6 +432,20 @@ contract AddFiveToFavoriteNumber is SimpleStorageOriginal {
         myFavoriteNumber = _favoriteNumber;
     }
 
+//------------------- SUPER FUNCTION --------------------------
+//The super keyword is used to call a function from the parent contract.
+//This is useful when you want to extend or modify the behavior of a function in the derived contract while still retaining the functionality of the parent contract's implementation.
+//In the example, super.store(_favoriteNumber) calls the store function from the parent contract (SimpleStorageOriginal) before adding 5 to the favorite number.
+//You use super.functionName() inside your override to call the parent contract’s logic.
+
+function store(uint256 _favoriteNumber) public virtual {
+  myFavoriteNumber = _favoriteNumber;
+}
+
+function store (uint256 _favoriteNumber) public override{
+  super.store(_favoriteNumber); // Call the parent logic
+  myFavoriteNumber = myFavoriteNumber + 5; // Extend it 
+}
 
 
 //--------------------------deployed to zksync sepolia testnet via remix
@@ -465,14 +479,7 @@ contract FamilyProfile {
 //Enums are stored as uint256 under the hood, starting from 0 for the first value, 1 for the second, and so on.
 //Enums are a way to define a custom type with a finite set of possible values. 
 
-
-
-// Pure function because it doesn't read/modify the state of the contract.
-function add(uint256 a, uint256 b) public pure returns (uint256) {
-    return a + b;  // No access to state variables
-}
-
-
+//-------------------reentrancy security --------------------------
 function withdrawSecure() public {
     uint256 amount = balances[msg.sender];
 
@@ -518,3 +525,24 @@ function verifyAddress(address _user) external onlyAdmin {
 function revokeAddress(address _user) external onlyAdmin {
     isVerified[_user] = false; // Revoke the verification
 }
+
+import {SimpleStorageOriginal} from "SimpleStorage.sol";
+
+contract Factory {
+SimpleStorageOriginal[] public listOfGeneratedContracts; 
+
+function createSimpleStorageContract() public {
+    SimpleStorageOriginal generatedContract = new SimpleStorageOriginal(); 
+    listOfGeneratedContracts.push(generatedContract);
+}
+
+
+import {SimpleStorage} from "./SimpleStorage.sol";
+
+contract AddFiveToFavoriteNumber is SimpleStorage {
+    //contract now inherits all state and functions from SimpleStorage
+    function store(uint256 _num) public override {
+    myNumber = _num + 5;
+}
+}
+
