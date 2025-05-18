@@ -546,3 +546,12 @@ contract AddFiveToFavoriteNumber is SimpleStorage {
 }
 }
 
+import {SimpleStorage} from "./SimpleStorage.sol";
+
+contract AddFiveToFavoriteNumber is SimpleStorage {
+    //contract now inherits all state and functions from SimpleStorage
+    function store(uint256 _num) public override {
+    myNumber = _num + 5;
+}
+}
+
