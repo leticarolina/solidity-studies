@@ -1,21 +1,22 @@
-//common structure for organizing Solidity contracts:
+// SPDX-License-Identifier: MIT
 
+pragma solidity ^0.8.18;
+
+//common structure for organizing Solidity contracts:
 //Pragma Statements - Version declarations and imports.
 //State Variables - Define variables to store contract state.
 //Modifiers - Place modifiers after state variables to provide access control or reusable checks for the functions below.
 //Constructor - Initialization logic.
 //Functions - Functions using modifiers can then be defined, and having modifiers close to them makes the purpose of each function clear.
-
+//getters and setters - If you have public variables, you can use getters to access them. Setters are optional and can be used to modify state variables.
+//Libraries - Libraries can be defined at the end of the contract or in separate files, depending on their complexity and reusability.
 // --------------------- FUND ME PROJECT -------------------------------------
-//SPDX-License-Identifier: MIT
-
-pragma solidity ^0.8.18;
 
 //get funds from users
 //set a minimum value in 5USD
 //be able to withdraw funds
 
-import {Converter} from "./Converter.sol"; //IMPORTING THE LIBRARY
+// import {Converter} from "./Converter.sol"; //IMPORTING THE LIBRARY
 using Converter for uint256; //essentially saying that any uint256 variable in our contract can use the functions defined in the Converter library
 
 // you can define custom errors to provide meaningful descriptions for conditions that fail in your smart contract
@@ -122,12 +123,9 @@ contract FundMe {
 }
 
 // ------------------------------- LIBRARY CONVERTER  -------------------------------------
-//SPDX-License-Identifier: MIT
-
-pragma solidity ^0.8.18;
 
 // This interface allows contract to interact with a Chainlink price feed
-import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
+// import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/shared/interfaces/AggregatorV3Interface.sol";
 
 library Converter {
     //AggregatorV3Interface is an interface, meaning it's a definition of how the contract at the specified address is structured.
@@ -163,7 +161,7 @@ library MathLibrary {
     }
 }
 //CONTRACT
-import "./MathLibrary.sol";
+// import "./MathLibrary.sol";
 
 contract AddNumbers {
     using MathLibrary for uint256;
@@ -213,3 +211,15 @@ contract FallBackExample {
 
 // !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!
 // !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!
+
+contract dummy {
+  uint256 public constant TOKEN_DECIMALS = 18; // compile-time, fixed forever
+  address public immutable i_owner; // set once in constructor
+
+  constructor() {
+    i_owner = msg.sender;
+}
+}
+
+
+

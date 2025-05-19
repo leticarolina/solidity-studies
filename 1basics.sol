@@ -268,19 +268,24 @@ struct User {
     bool verified;
 }
 
+contract UserManagement {
+    // Mapping each user (address) to a User struct
+    // This allows us to store multiple pieces of information about each user
 mapping(address => User) public users; // Mapping each user (address) to a User struct
 
 function updateUser(address _user, uint256 _balance) public {
     users[_user].balance = _balance; // Update the balance of the user
     users[_user].verified = true; // Mark the user as verified
 }
-
+}
+contract example{
 //deleting a mapping
 //This will reset the value associated with the key to its default value (0 for uint256, false for bool, etc.).
-mapping(address => uint256) public balances;
+mapping(address => uint256) private balances;
 
 function clearBalance(address _user) external {
     delete balances[_user];  // Resets balance to 0
+}
 }
 // ------------------------------------- MEMORY VS CALLDATA --------------------------
 // SPDX-License-Identifier: MIT
@@ -431,7 +436,7 @@ contract AddFiveToFavoriteNumber is SimpleStorageOriginal {
  function store(uint256 _favoriteNumber) public virtual {
         myFavoriteNumber = _favoriteNumber;
     }
-
+}
 //------------------- SUPER FUNCTION --------------------------
 //The super keyword is used to call a function from the parent contract.
 //This is useful when you want to extend or modify the behavior of a function in the derived contract while still retaining the functionality of the parent contract's implementation.
