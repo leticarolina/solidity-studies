@@ -209,17 +209,28 @@ contract FallBackExample {
     }
 }
 
-// !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!
-// !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!
 
-contract dummy {
-  uint256 public constant TOKEN_DECIMALS = 18; // compile-time, fixed forever
-  address public immutable i_owner; // set once in constructor
-
-  constructor() {
-    i_owner = msg.sender;
-}
+library Math {
+    function double(uint256 x) internal pure returns (uint256) {
+        return x * 2;
+    }
 }
 
+using Math for uint256; 
+{
+uint8 a = 255;
+uint8 b;
 
+// Doesn’t revert — wraps to 0 (like Solidity <0.8)
+unchecked { b = a + 1;}
+}
 
+//this tells Solidity: “Let me call functions from the Math library directly on any uint256 value.”
+
+//So now you can write:
+uint256 value = 5;
+uint256 result = value.double(); // equivalent to Math.double(value)
+
+// ------------------------------- CONSTANT AND IMMUTABLE -------------------------------------ß
+// !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!
+// !!!----- FOR CONSTANT AND IMMUTABLE , check my OneNote!!

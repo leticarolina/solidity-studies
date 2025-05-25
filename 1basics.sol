@@ -287,6 +287,8 @@ function clearBalance(address _user) external {
     delete balances[_user];  // Resets balance to 0
 }
 }
+
+
 // ------------------------------------- MEMORY VS CALLDATA --------------------------
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
@@ -542,13 +544,22 @@ function createSimpleStorageContract() public {
 }
 
 
-import {SimpleStorage} from "./SimpleStorage.sol";
+address public owner;
 
-contract AddFiveToFavoriteNumber is SimpleStorage {
-    //contract now inherits all state and functions from SimpleStorage
-    function store(uint256 _num) public override {
-    myNumber = _num + 5;
-}
+modifier onlyOwner() {
+    require(msg.sender == owner, "Not the owner");
+    _; //Placeholder for the function, means: “Now run the actual function.”
 }
 
+
+function withdraw() public onlyOwner {
+    // Only runs if msg.sender == owner
+    // Function body goes here
+}
+
+error NotOwner(address caller);
+
+if (msg.sender != i_owner) {
+    revert NotOwner(msg.sender);
+}
 
