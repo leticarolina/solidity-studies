@@ -19,6 +19,5 @@ function sfStoreValueInIndex(uint256 _index, uint256  _favoriteNumber) public {
 }
 
 function sfGetValueInIndex(uint256 _index) public view returns (uint256){
-SimpleStorageArray[_index].retrieve();
+  return simpleStorageArray[_index].retrieve();
 }}
-

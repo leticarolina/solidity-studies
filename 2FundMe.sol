@@ -218,11 +218,13 @@ library Math {
 
 using Math for uint256; 
 {
+    
 uint8 a = 255;
 uint8 b;
 
 // Doesn’t revert — wraps to 0 (like Solidity <0.8)
 unchecked { b = a + 1;}
+
 }
 
 //this tells Solidity: “Let me call functions from the Math library directly on any uint256 value.”

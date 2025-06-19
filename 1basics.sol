@@ -563,3 +563,13 @@ if (msg.sender != i_owner) {
     revert NotOwner(msg.sender);
 }
 
+error NotOwner(address caller);
+
+modifier onlyOwner {
+    // require(msg.sender == owner, "Not contract owner");
+    if (msg.sender != i_owner) {
+        revert NotOwner(msg.sender);
+    }
+    _;
+}
+
